@@ -1,0 +1,78 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "ES6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/core/*": ["./src/core/*"],
+      "@/data/*": ["./src/data/*"],
+      "@/ui/*": ["./src/ui/*"],
+      "@/infra/*": ["./src/infra/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/components/*": ["./src/ui/components/*"],
+      "@/hooks/*": ["./src/ui/hooks/*"],
+      "@/utils/*": ["./src/core/utils/*"],
+      "@/types/*": ["./src/core/types/*"],
+      "@/constants/*": ["./src/core/constants/*"],
+      "@/models/*": ["./src/core/models/*"],
+      "@/engines/*": ["./src/core/engines/*"],
+      "@/storage/*": ["./src/data/storage/*"],
+      "@/api/*": ["./src/data/api/*"],
+      "@/config/*": ["./src/infra/config/*"],
+      "@/styles/*": ["./src/ui/styles/*"],
+      "@/layouts/*": ["./src/ui/layouts/*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out",
+    "dist",
+    "build",
+    "coverage",
+    "cypress",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+} 
