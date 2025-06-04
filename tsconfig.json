@@ -54,7 +54,6 @@
     "noPropertyAccessFromIndexSignature": false,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "noUncheckedIndexedAccess": true
   },
   "include": [
     "next-env.d.ts",
