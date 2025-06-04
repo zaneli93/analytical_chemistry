@@ -194,6 +194,6 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 📞 Contato
 
-Bruno - [GitHub](https://github.com/username)
+Bruno - [GitHub](https://github.com/zaneli93/zaneli93)
 
 Link do Projeto: [https://github.com/username/analytical-chemistry-pwa](https://github.com/username/analytical-chemistry-pwa) 
