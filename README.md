@@ -125,7 +125,7 @@ Configurações em `jest.config.js` já incluem o alias `@/` → `src/`.
 - [ ] Interface de simulação (formulário)  
 
 ### **Fase 3** : Química avançada
-- [ ] Ácido fraco × base forte (Ka)  
+- [ ] Ácido fraco × base forte (Kas e Kbs)  
 - [ ] Polipróticos & tampões  
 - [ ] Derivada 1.ª/2.ª para equivalência  
 
