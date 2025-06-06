@@ -1,199 +1,161 @@
-# Analytical Chemistry PWA
+# Analytical Chemistry PWA 🚀  
+*Simulador potencialométrico de titulações ácido-base – mobile-first, offline-first.*
 
-Progressive Web Application para simulações potencialométricas de ácido/base com foco mobile-first.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## 🧪 Visão Geral
+---
 
-Este projeto é uma PWA educacional que permite realizar simulações interativas de titulações ácido-base, visualizar curvas potencialométricas e compreender os conceitos fundamentais da química analítica.
+## 🧭 Visão Geral
 
-## 🚀 Características
+Este projeto é uma **Progressive Web Application (PWA)** educativa:  
+o usuário escolhe um ácido, uma base, suas concentrações/volumes e o app gera a **curva de titulação** (pH × volume adicionado).  
 
-- **Mobile-First**: Interface otimizada para dispositivos móveis
-- **PWA**: Funciona offline e pode ser instalada como app nativo
-- **Simulações Interativas**: Cálculos em tempo real de potenciometria
-- **Visualizações**: Gráficos interativos de curvas de titulação
-- **Performance**: Carregamento rápido e operações fluidas
-- **TypeScript**: Type safety para cálculos químicos críticos
+> **Status atual (jun 2025)**  
+> * Motor forte × forte implementado e validado por testes  
+> * Geração de pontos da curva em array pronto para plotagem  
+> * Ambiente Jest/ts-jest configurado  
+> * Mini-banco de reagentes (HCl, NaOH) disponível
 
-## 🏗️ Arquitetura
+---
 
-O projeto segue uma arquitetura modular baseada em Clean Architecture:
+## ✨ Funcionalidades
+
+| ✅ Implementado | 🔜 Próximos passos |
+|-----------------|-------------------|
+| Motor de cálculo **ácido forte × base forte** | Ácido fraco × base forte (Ka) |
+| Geração de **array (vol,pH)** para gráfico | Gráfico Chart.js interativo |
+| Testes unitários Jest + ts-jest | Derivada 1.ª/2.ª e detecção de equivalência |
+| PWA básica (offline) | Exportar CSV / PNG |
+| Mobile-first (Tailwind) | Motor para polipróticos / sais ácidos |
+
+---
+
+## 🏗️ Arquitetura (Clean Architecture)
 
 ```
 src/
-├── core/           # Lógica de negócio e cálculos
-├── data/           # Gerenciamento de dados e storage
-├── ui/             # Componentes e interface
-├── infra/          # Configurações e infraestrutura
-└── app/            # Páginas e rotas (Next.js App Router)
+├─ core/                   # Lógica de negócio
+│  ├─ strongAcidBase.ts    # pH forte×forte ✅
+│  ├─ generateCurve.ts     # gera array de pontos ✅
+│  └─ … futuros engines
+├─ data/
+│  └─ reagents.ts          # mini-banco HCl / NaOH
+├─ ui/                     # componentes (a implementar)
+├─ app/                    # rotas Next.js (App Router)
+└─ infra/                  # config, scripts, tests
 ```
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 com App Router
-- **Linguagem**: TypeScript
-- **Styling**: Tailwind CSS + Headless UI
-- **Estado**: Zustand
-- **Gráficos**: Chart.js + React-Chartjs-2
-- **Cálculos**: Math.js + Custom Chemistry Engine
-- **PWA**: Next-PWA + Workbox
-- **Storage**: IndexedDB (Dexie.js)
-- **Testing**: Jest + Cypress + Storybook
+| Camada | Tecnologias |
+|--------|-------------|
+| **Framework** | Next.js 14 (App Router) |
+| **Linguagem** | TypeScript 5.3 |
+| **Styling** | Tailwind CSS + Headless UI |
+| **Estado** | Zustand |
+| **Gráficos** | Chart.js + react-chartjs-2 (pendente) |
+| **Cálculos** | Math.js + engines próprios |
+| **PWA** | next-pwa + Workbox |
+| **Storage** | IndexedDB (Dexie.js) |
+| **Testes** | Jest + ts-jest (+ Cypress E2E em breve) |
 
-## 📦 Setup do Projeto
+---
 
-### Pré-requisitos
+## ⚡ Instalação & Execução
 
-- Node.js >= 18.0.0
-- npm >= 9.0.0
+### 1. Pré-requisitos
+* **Node.js ≥ 18**     |    **npm ≥ 9**
 
-### Instalação
-
+### 2. Clone & instale
 ```bash
-# Clone o repositório
-git clone https://github.com/username/analytical-chemistry-pwa.git
-cd analytical-chemistry-pwa
-
-# Instale as dependências
+git clone https://github.com/zaneli93/analytical_chemistry.git
+cd analytical_chemistry
 npm install
-
-# Configure as variáveis de ambiente
-cp .env.example .env.local
-
-# Execute em modo desenvolvimento
-npm run dev
 ```
 
-### Scripts Disponíveis
-
+### 3. Variáveis de ambiente:
 ```bash
-# Desenvolvimento
-npm run dev              # Inicia servidor de desenvolvimento
-npm run build            # Build para produção
-npm run start            # Inicia servidor de produção
-
-# Qualidade de Código
-npm run lint             # Executa linting
-npm run lint:fix         # Corrige problemas de linting
-npm run type-check       # Verifica tipos TypeScript
-
-# Testes
-npm run test             # Executa testes unitários
-npm run test:watch       # Executa testes em modo watch
-npm run test:coverage    # Executa testes com coverage
-npm run test:e2e         # Executa testes E2E (Cypress)
-
-# Storybook
-npm run storybook        # Inicia Storybook
-npm run build-storybook  # Build do Storybook
-
-# Utilitários
-npm run analyze          # Analisa bundle size
-npm run clean            # Limpa arquivos de build
+cp .env.example .env.local
 ```
 
-## 📁 Estrutura de Pastas
-
-```
-analytical-chemistry-pwa/
-├── public/                 # Assets estáticos
-│   ├── icons/             # Ícones PWA
-│   ├── images/            # Imagens
-│   └── manifest.json      # Manifest PWA
-├── src/
-│   ├── app/               # Next.js App Router
-│   │   ├── globals.css    # Estilos globais
-│   │   ├── layout.tsx     # Layout raiz
-│   │   ├── page.tsx       # Página inicial
-│   │   └── simulation/    # Páginas de simulação
-│   ├── core/              # Lógica de negócio
-│   │   ├── engines/       # Motores de simulação
-│   │   ├── models/        # Modelos de dados
-│   │   ├── constants/     # Constantes químicas
-│   │   └── utils/         # Utilitários
-│   ├── data/              # Camada de dados
-│   │   ├── storage/       # Storage local
-│   │   ├── api/           # Cliente API
-│   │   └── hooks/         # Hooks de dados
-│   ├── ui/                # Interface do usuário
-│   │   ├── components/    # Componentes React
-│   │   ├── layouts/       # Layouts
-│   │   ├── hooks/         # Hooks de UI
-│   │   └── styles/        # Estilos
-│   └── infra/             # Infraestrutura
-│       ├── config/        # Configurações
-│       ├── scripts/       # Scripts de build
-│       └── tests/         # Setup de testes
-├── docs/                  # Documentação
-├── .storybook/           # Configuração Storybook
-├── cypress/              # Testes E2E
-├── architecture.md       # Documentação da arquitetura
-├── package.json          # Dependências e scripts
-└── README.md            # Este arquivo
+### 4. Desenvolvimento:
+```bash
+npm run dev
+# Abra http://localhost:3000
 ```
 
-## 🧪 Módulos Principais
+> **Windows / PowerShell** – Caso scripts .ps1 sejam bloqueados:  
+> `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
 
-### Core Module
-Contém a lógica de negócio principal:
-- **Simulation Engine**: Motor de simulação potencialométrica
-- **Calculation Engine**: Cálculos químicos (pH, pOH, concentrações)
-- **Validation Logic**: Validação de parâmetros de entrada
-- **Chemistry Models**: Modelos de ácidos, bases e soluções
+### 5. Testes:
+```bash
+npm test        # roda Jest + ts-jest
+```
+Configurações em `jest.config.js` já incluem o alias `@/` → `src/`.
 
-### Data Module
-Gerencia persistência e cache:
-- **IndexedDB Storage**: Armazenamento offline de simulações
-- **Cache Management**: Sistema de cache inteligente
-- **Data Hooks**: Hooks React para acesso aos dados
+---
 
-### UI Module
-Interface do usuário:
-- **Responsive Components**: Componentes mobile-first
-- **Chart Components**: Visualizações interativas
-- **Form Components**: Formulários de entrada de dados
-- **Layout System**: Sistema de layouts responsivos
+## 📋 Scripts úteis
 
-## 🎯 Roadmap
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | servidor Next.js com Fast Refresh |
+| `npm run build` / `start` | build e servir produção |
+| `npm run lint` / `lint:fix` | ESLint |
+| `npm run type-check` | checagem de tipos |
+| `npm run storybook` | Storybook (UI isolada) |
+| `npm run test:e2e` | Cypress (em breve) |
+| `npm run analyze` | análise de bundle |
+| `npm run clean` | remove .next, dist, coverage |
 
-### Fase 1: Foundation (Semanas 1-2)
-- [x] Setup inicial do projeto
-- [x] Configuração da arquitetura
-- [ ] Implementação do core de cálculos
-- [ ] Testes unitários básicos
+---
 
-### Fase 2: UI & Simulation (Semanas 3-4)
-- [ ] Design system e componentes base
-- [ ] Interface de simulação
-- [ ] Integração com engine de cálculos
-- [ ] Gráficos interativos
+## 🛣️ Roadmap
 
-### Fase 3: PWA & Optimization (Semanas 5-6)
-- [ ] Configuração PWA completa
-- [ ] Implementação offline-first
-- [ ] Otimizações de performance
-- [ ] Testes E2E
+### **Fase 1** : Fundamentos
+- [x] Setup inicial  
+- [x] Motor forte×forte  
+- [x] Testes unitários básicos  
 
-### Fase 4: Deploy & Polish (Semana 7)
-- [ ] Pipeline CI/CD
-- [ ] Deploy em produção
-- [ ] Documentação final
-- [ ] Feedback e ajustes
+### **Fase 2** : UI & Simulação
+- [ ] Design System + componentes base  
+- [ ] Integração do gráfico Chart.js  
+- [ ] Interface de simulação (formulário)  
 
-## 🤝 Contribuição
+### **Fase 3** : Química avançada
+- [ ] Ácido fraco × base forte (Kas e Kbs)  
+- [ ] Polipróticos & tampões  
+- [ ] Derivada 1.ª/2.ª para equivalência  
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+### **Fase 4** : PWA & Deploy
+- [ ] Offline-first completo  
+- [ ] Pipeline CI/CD (Vercel)  
+- [ ] Exportações (CSV, PNG)  
 
-## 📄 Licença
+---
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+## 🤝 Contribuindo
 
-## 📞 Contato
+1. **fork** → `git checkout -b feature/suaFeature`  
+2. `git commit -m 'feat: minha feature'`  
+3. `git push origin feature/suaFeature`  
+4. **Abra um Pull Request**  
 
-Bruno - [GitHub](https://github.com/zaneli93/zaneli93)
+> Branch principal: **main**  
+> Padrão de nome para feature: `feature/xxx`
 
-Link do Projeto: [https://github.com/username/analytical-chemistry-pwa](https://github.com/zaneli93/analytical_chemistry)
+---
+
+## 📜 Licença
+
+**MIT** – consulte [LICENSE](LICENSE).
+
+---
+
+## 📇 Contato
+
+**Bruno Zaneli**  
+GitHub: [@zaneli93](https://github.com/zaneli93)  
+Projeto: [https://github.com/zaneli93/analytical_chemistry](https://github.com/zaneli93/analytical_chemistry)
