@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[role='listbox'] {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
