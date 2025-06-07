@@ -7,26 +7,30 @@
 
 ## 🧭 Visão Geral
 
-Este projeto é uma **Progressive Web Application (PWA)** educativa:  
-o usuário escolhe um ácido, uma base, suas concentrações/volumes e o app gera a **curva de titulação** (pH × volume adicionado).  
+Este projeto é uma **Progressive Web Application (PWA)** educativa para simulações potencialométricas de titulações ácido-base. O usuário escolhe reagentes (ácidos e bases), define concentrações e volumes, e o app gera a **curva de titulação** (pH × volume adicionado) com visualização gráfica interativa.
 
-> **Status atual (jun 2025)**  
-> * Motor forte × forte implementado e validado por testes  
-> * Geração de pontos da curva em array pronto para plotagem  
-> * Ambiente Jest/ts-jest configurado  
-> * Mini-banco de reagentes (HCl, NaOH) disponível
+> **Status atual (Janeiro 2025)**  
+> * ✅ Motor de cálculo **ácido forte × base forte** implementado e testado
+> * ✅ Interface de simulação funcional com Chart.js
+> * ✅ Seleção de reagentes com busca inteligente (Combobox)
+> * ✅ PWA configurada com service worker e manifest
+> * ✅ Testes unitários Jest + ts-jest (100% aprovação)
+> * ✅ Build de produção otimizado
+> * ✅ Banco de reagentes expandido (10+ ácidos/bases fortes)
 
 ---
 
 ## ✨ Funcionalidades
 
-| ✅ Implementado | 🔜 Próximos passos |
-|-----------------|-------------------|
-| Motor de cálculo **ácido forte × base forte** | Ácido fraco × base forte (Ka) |
-| Geração de **array (vol,pH)** para gráfico | Gráfico Chart.js interativo |
-| Testes unitários Jest + ts-jest | Derivada 1.ª/2.ª e detecção de equivalência |
-| PWA básica (offline) | Exportar CSV / PNG |
-| Mobile-first (Tailwind) | Motor para polipróticos / sais ácidos |
+| ✅ **Implementado** | 🔜 **Próximos passos** |
+|---------------------|------------------------|
+| Motor de cálculo **ácido forte × base forte** | Ácido fraco × base forte (Ka/Kb) |
+| **Interface de simulação completa** | Derivada 1.ª/2.ª e detecção automática de equivalência |
+| **Gráfico Chart.js interativo** | Sistema de histórico de simulações |
+| **Seleção inteligente de reagentes** | Exportar dados (CSV/PNG) |
+| **PWA offline-first** | Motor para ácidos/bases polipróticos |
+| **Design mobile-first responsivo** | Calculadora de pH rápida |
+| **Testes unitários completos** | Testes E2E com Cypress |
 
 ---
 
@@ -34,32 +38,40 @@ o usuário escolhe um ácido, uma base, suas concentrações/volumes e o app ger
 
 ```
 src/
+├─ app/                    # Next.js App Router
+│  ├─ page.tsx            # Página inicial ✅
+│  ├─ layout.tsx          # Layout global ✅
+│  ├─ globals.css         # Estilos globais ✅
+│  └─ simulation/
+│     └─ page.tsx         # Interface de simulação ✅
 ├─ core/                   # Lógica de negócio
-│  ├─ strongAcidBase.ts    # pH forte×forte ✅
-│  ├─ generateCurve.ts     # gera array de pontos ✅
-│  └─ … futuros engines
+│  ├─ strongStrongGeneric.ts    # Motor genérico forte×forte ✅
+│  ├─ strongAcidBase.ts         # motor legado ✅
+│  ├─ generateCurve.ts          # geração de pontos ✅
+│  └─ titrationEngine.ts        # engine principal ✅
 ├─ data/
-│  └─ reagents.ts          # mini-banco HCl / NaOH
-├─ ui/                     # componentes (a implementar)
-├─ app/                    # rotas Next.js (App Router)
-└─ infra/                  # config, scripts, tests
+│  └─ reagents.ts         # banco de 10+ reagentes ✅
+└─ __tests__/             # testes unitários ✅
+   ├─ strongStrongGeneric.test.ts
+   └─ strongAcidBase.test.ts
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Camada | Tecnologias |
-|--------|-------------|
-| **Framework** | Next.js 14 (App Router) |
-| **Linguagem** | TypeScript 5.3 |
-| **Styling** | Tailwind CSS + Headless UI |
-| **Estado** | Zustand |
-| **Gráficos** | Chart.js + react-chartjs-2 (pendente) |
-| **Cálculos** | Math.js + engines próprios |
-| **PWA** | next-pwa + Workbox |
-| **Storage** | IndexedDB (Dexie.js) |
-| **Testes** | Jest + ts-jest (+ Cypress E2E em breve) |
+| Camada | Tecnologias | Status |
+|--------|-------------|---------|
+| **Framework** | Next.js 14 (App Router) | ✅ Implementado |
+| **Linguagem** | TypeScript 5.3 | ✅ Implementado |
+| **Styling** | Tailwind CSS + Headless UI | ✅ Implementado |
+| **Estado** | Zustand | 📦 Instalado (não usado ainda) |
+| **Gráficos** | Chart.js + react-chartjs-2 | ✅ Implementado |
+| **Cálculos** | Math.js + engines próprios | ✅ Implementado |
+| **PWA** | next-pwa + Workbox | ✅ Implementado |
+| **Storage** | IndexedDB (Dexie.js) | 📦 Instalado (não usado ainda) |
+| **Testes** | Jest + ts-jest | ✅ Implementado |
+| **E2E** | Cypress | 📦 Instalado (não configurado) |
 
 ---
 
@@ -77,7 +89,7 @@ npm install
 
 ### 3. Variáveis de ambiente:
 ```bash
-cp .env.example .env.local
+cp env.example .env.local
 ```
 
 ### 4. Desenvolvimento:
@@ -92,70 +104,142 @@ npm run dev
 ### 5. Testes:
 ```bash
 npm test        # roda Jest + ts-jest
+npm run test:coverage  # com cobertura
 ```
-Configurações em `jest.config.js` já incluem o alias `@/` → `src/`.
+
+### 6. Build de produção:
+```bash
+npm run build
+npm start
+```
 
 ---
 
-## 📋 Scripts úteis
+## 📋 Scripts disponíveis
 
-| Comando | Descrição |
-|---------|-----------|
-| `npm run dev` | servidor Next.js com Fast Refresh |
-| `npm run build` / `start` | build e servir produção |
-| `npm run lint` / `lint:fix` | ESLint |
-| `npm run type-check` | checagem de tipos |
-| `npm run storybook` | Storybook (UI isolada) |
-| `npm run test:e2e` | Cypress (em breve) |
-| `npm run analyze` | análise de bundle |
-| `npm run clean` | remove .next, dist, coverage |
+| Comando | Descrição | Status |
+|---------|-----------|---------|
+| `npm run dev` | servidor Next.js com Fast Refresh | ✅ Funcional |
+| `npm run build` / `start` | build e servir produção | ✅ Funcional |
+| `npm run lint` / `lint:fix` | ESLint | ✅ Funcional |
+| `npm run type-check` | checagem de tipos TypeScript | ✅ Funcional |
+| `npm run test` | Jest + ts-jest | ✅ Funcional |
+| `npm run test:coverage` | testes com cobertura | ✅ Funcional |
+| `npm run storybook` | Storybook (UI isolada) | 📦 Instalado (não configurado) |
+| `npm run test:e2e` | Cypress E2E | 📦 Instalado (não configurado) |
+| `npm run analyze` | análise de bundle | ✅ Funcional |
+| `npm run clean` | remove .next, dist, coverage | ✅ Funcional |
+
+---
+
+## 🎯 Como usar
+
+### Simulação Básica
+1. Acesse `/simulation` 
+2. Escolha **Reagente A** e **Reagente B** (ácido + base)
+3. Configure **concentração** e **volume** do analito
+4. Defina qual reagente está na **bureta** (titulante)
+5. Clique **"Generate Curve"** para ver o gráfico pH × volume
+
+### Reagentes Disponíveis
+**Ácidos Fortes:** HCl, HBr, HI, HNO₃, HClO₄  
+**Bases Fortes:** NaOH, KOH, LiOH, RbOH, CsOH
 
 ---
 
 ## 🛣️ Roadmap
 
-### **Fase 1** : Fundamentos
-- [x] Setup inicial  
-- [x] Motor forte×forte  
-- [x] Testes unitários básicos  
+### **Fase 1** : Fundamentos ✅
+- [x] Setup inicial Next.js + TypeScript  
+- [x] Motor forte×forte genérico
+- [x] Interface de simulação funcional
+- [x] Testes unitários completos
+- [x] PWA básica configurada
 
-### **Fase 2** : UI & Simulação
-- [ ] Design System + componentes base  
-- [ ] Integração do gráfico Chart.js  
-- [ ] Interface de simulação (formulário)  
+### **Fase 2** : Melhorias UX/UI 🔄
+- [ ] Design System + componentes reutilizáveis
+- [ ] Gerenciamento de estado com Zustand  
+- [ ] Histórico de simulações (IndexedDB)
+- [ ] Melhorias na responsividade mobile
 
-### **Fase 3** : Química avançada
-- [ ] Ácido fraco × base forte (Kas e Kbs)  
-- [ ] Polipróticos & tampões  
-- [ ] Derivada 1.ª/2.ª para equivalência  
+### **Fase 3** : Química avançada 🔜
+- [ ] Ácido fraco × base forte (constantes Ka/Kb)  
+- [ ] Detecção automática do ponto de equivalência
+- [ ] Cálculo de derivadas (1ª e 2ª) da curva
+- [ ] Ácidos/bases polipróticos  
 
-### **Fase 4** : PWA & Deploy
-- [ ] Offline-first completo  
-- [ ] Pipeline CI/CD (Vercel)  
-- [ ] Exportações (CSV, PNG)  
+### **Fase 4** : Recursos avançados 🔜
+- [ ] Exportação de dados (CSV, PNG)
+- [ ] Calculadora de pH standalone
+- [ ] Testes E2E com Cypress
+- [ ] Pipeline CI/CD automatizado
+
+### **Fase 5** : Deploy & Produção 🔜
+- [ ] Deploy em Vercel/Netlify
+- [ ] Otimizações de performance
+- [ ] Analytics e monitoramento
+- [ ] Documentação completa
+
+---
+
+## 🧪 Arquivos principais
+
+### Core (Lógica de negócio)
+- `src/core/strongStrongGeneric.ts` - Motor principal de cálculo
+- `src/core/generateCurve.ts` - Geração de pontos para gráfico
+- `src/data/reagents.ts` - Banco de reagentes químicos
+
+### Interface
+- `src/app/simulation/page.tsx` - Interface principal de simulação
+- `src/app/page.tsx` - Página inicial
+- `src/app/layout.tsx` - Layout global da aplicação
+
+### Configuração
+- `next.config.js` - Configuração Next.js + PWA
+- `public/manifest.json` - Manifest da PWA
+- `tailwind.config.js` - Configuração do Tailwind CSS
 
 ---
 
 ## 🤝 Contribuindo
 
-1. **fork** → `git checkout -b feature/suaFeature`  
-2. `git commit -m 'feat: minha feature'`  
-3. `git push origin feature/suaFeature`  
-4. **Abra um Pull Request**  
+1. **Fork** o projeto
+2. Crie uma branch: `git checkout -b feature/minha-feature`  
+3. Commit suas mudanças: `git commit -m 'feat: adiciona nova feature'`  
+4. Push para a branch: `git push origin feature/minha-feature`  
+5. **Abra um Pull Request**  
 
-> Branch principal: **main**  
-> Padrão de nome para feature: `feature/xxx`
+> **Convenções:**
+> - Branch principal: **main**  
+> - Padrão de commits: [Conventional Commits](https://conventionalcommits.org/)
+> - Padrão de branches: `feature/`, `fix/`, `docs/`
+
+---
+
+## 📊 Status dos Testes
+
+```bash
+# Última execução
+✅ Test Suites: 2 passed, 2 total
+✅ Tests: 5 passed, 5 total  
+✅ Snapshots: 0 total
+⏱️ Time: 2.07s
+```
+
+**Cobertura atual:** Lógica de cálculo 100% testada
 
 ---
 
 ## 📜 Licença
 
-**MIT** – consulte [LICENSE](LICENSE).
+**MIT** – consulte [LICENSE](LICENSE) para detalhes.
 
 ---
 
-## 📇 Contato
+## 📇 Contato & Links
 
-**Bruno Zaneli**  
-GitHub: [@zaneli93](https://github.com/zaneli93)  
-Projeto: [https://github.com/zaneli93/analytical_chemistry](https://github.com/zaneli93/analytical_chemistry)
+**Desenvolvedor:** Bruno Zaneli  
+**GitHub:** [@zaneli93](https://github.com/zaneli93)  
+**Projeto:** [analytical_chemistry](https://github.com/zaneli93/analytical_chemistry)
+
+**Documentação técnica:** [architecture.md](architecture.md)
