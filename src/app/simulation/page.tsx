@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
+import { Combobox } from '@headlessui/react';
 import { reagents } from '@/data/reagents';
 import { calcPHStrongStrongGeneric } from '@/core/strongStrongGeneric';
 
@@ -21,9 +22,12 @@ import {
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend);
 
 export default function SimulationPage() {
+  // ------- constantes ----------
+  const MIN_C = 0.0001;      // 1 × 10⁻⁴ M
+  
   // ------- estado ----------
-  const [reagentA, setReagentA] = useState<Reagent>(reagents[0]);
-  const [reagentB, setReagentB] = useState<Reagent>(reagents[1]);
+  const [reagentA, setReagentA] = useState<(typeof reagents)[number] | null>(null);
+  const [reagentB, setReagentB] = useState<(typeof reagents)[number] | null>(null);
   const [buretteIsA, setBuretteIsA] = useState(false);   // false = B na bureta
   const [conc, setConc]   = useState(0.1);   // mol/L do analito
   // NOVO – volumes fixos
@@ -32,8 +36,43 @@ export default function SimulationPage() {
     useState<typeof presetVolumes[number]>(25); // 25 mL default
   const [points, setPoints] = useState<{ vol: number; pH: number }[]>([]);
 
+  function normalize(str: string) {
+    return str
+      .normalize('NFD')                 // separa acentos
+      .replace(/[\u0300-\u036f]/g, '')  // remove acentos
+      .toLowerCase();
+  }
+
+  /* busca e lista filtrada p/ A */
+  const [queryA, setQueryA] = useState('');
+  const filteredA =
+    queryA === ''
+      ? reagents
+      : reagents.filter(r =>
+          normalize(r.name).includes(normalize(queryA))
+        );
+
+  /* busca e lista filtrada p/ B */
+  const [queryB, setQueryB] = useState('');
+  const filteredB =
+    queryB === ''
+      ? reagents
+      : reagents.filter(r =>
+          normalize(r.name).includes(normalize(queryB))
+        );
+
   // ------- helpers ----------
   function generateCurve() {
+    // Validação de reagentes
+    if (!reagentA || !reagentB) {
+      alert('Choose both reagents');
+      return;
+    }
+    // Validação extra - verificar concentração mínima
+    if (conc < MIN_C) {
+      alert(`Minimum concentration is ${MIN_C} mol/L to keep water auto-ionisation negligible.`);
+      return;
+    }
     const analyte  = buretteIsA ? reagentB : reagentA;
     const titrant  = buretteIsA ? reagentA : reagentB;
     const cA = conc;
@@ -95,31 +134,77 @@ export default function SimulationPage() {
 
       {/* --- Formulário --- */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label className="block text-sm font-medium">Reagent A</label>
-          <select
-            value={reagentA.id}
-            onChange={e => setReagentA(reagents.find(r => r.id === e.target.value)!)}
-            className="mt-1 w-full border p-2 rounded"
-          >
-            {reagents.map(r => (
-              <option key={r.id} value={r.id}>{r.name}</option>
-            ))}
-          </select>
-        </div>
+        {/* === COMBOBOX REAGENT A === */}
+        <Combobox value={reagentA} onChange={setReagentA}>
+          <Combobox.Label className="block text-sm font-medium mb-1">Reagent A</Combobox.Label>
 
-        <div>
-          <label className="block text-sm font-medium">Reagent B</label>
-          <select
-            value={reagentB.id}
-            onChange={e => setReagentB(reagents.find(r => r.id === e.target.value)!)}
-            className="mt-1 w-full border p-2 rounded"
-          >
-            {reagents.map(r => (
-              <option key={r.id} value={r.id}>{r.name}</option>
-            ))}
-          </select>
-        </div>
+          {/* Campo de entrada */}
+          <div className="relative">
+            <Combobox.Input
+              className="w-full border p-2 rounded"
+              placeholder="Type acid or base…"
+              displayValue={(r: (typeof reagents)[number] | null) => r?.name ?? ''}
+              onChange={e => setQueryA(e.target.value)}
+            />
+
+            {/* Lista  */}
+            {filteredA.length > 0 && (
+              <Combobox.Options
+                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white shadow-lg list-none"
+              >
+                {filteredA.map(r => (
+                  <Combobox.Option
+                    key={r.id}
+                    value={r}
+                    className={({ active }) =>
+                      `cursor-pointer px-4 py-2 ${
+                        active ? 'bg-blue-600 text-white' : ''
+                      }`
+                    }
+                  >
+                    {r.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            )}
+          </div>
+        </Combobox>
+
+        {/* === COMBOBOX REAGENT B === */}
+        <Combobox value={reagentB} onChange={setReagentB}>
+          <Combobox.Label className="block text-sm font-medium mb-1">Reagent B</Combobox.Label>
+
+          {/* Campo de entrada */}
+          <div className="relative">
+            <Combobox.Input
+              className="w-full border p-2 rounded"
+              placeholder="Type acid or base…"
+              displayValue={(r: (typeof reagents)[number] | null) => r?.name ?? ''}
+              onChange={e => setQueryB(e.target.value)}
+            />
+
+            {/* Lista  */}
+            {filteredB.length > 0 && (
+              <Combobox.Options
+                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white shadow-lg list-none"
+              >
+                {filteredB.map(r => (
+                  <Combobox.Option
+                    key={r.id}
+                    value={r}
+                    className={({ active }) =>
+                      `cursor-pointer px-4 py-2 ${
+                        active ? 'bg-blue-600 text-white' : ''
+                      }`
+                    }
+                  >
+                    {r.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            )}
+          </div>
+        </Combobox>
 
         <div className="md:col-span-2 flex items-center space-x-4">
           <span className="font-medium">Burette:</span>
@@ -146,7 +231,10 @@ export default function SimulationPage() {
         <div>
           <label className="block text-sm font-medium">Concentration of analyte (mol L⁻¹)</label>
           <input
-            type="number" step="0.01" value={conc}
+            type="number"
+            step="0.01"
+            min={MIN_C}
+            value={conc}
             onChange={e => setConc(+e.target.value)}
             className="mt-1 w-full border p-2 rounded"
           />
