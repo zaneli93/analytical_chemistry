@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --- HeadlessUI Combobox - remove bullets --- */
 [role='listbox'] {
-  list-style: none;
+  list-style-type: none;  /* sem bullet */
   margin: 0;
   padding-left: 0;
-}
+} 
