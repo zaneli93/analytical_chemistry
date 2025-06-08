@@ -20,6 +20,7 @@ export const reagents = [
   { id: "hf",      name: "Ácido Fluorídrico", type: "acid", strength: "weak", protons: 1, Ka: 6.6e-4 },
   { id: "ohba",    name: "Ácido o-hidroxibenzoico", type: "acid", strength: "weak", protons: 1, Ka: 1.0e-3 },
 
+
   /* ────── BASES FRACAS (monopróticas) ────── */
   { id: "nh3",    name: "Amônia (NH₃)",    type: "base", strength: "weak", protons: 1, Kb: 1.8e-5 },
   { id: "ch3nh2", name: "Metilamina",      type: "base", strength: "weak", protons: 1, Kb: 4.4e-4 }

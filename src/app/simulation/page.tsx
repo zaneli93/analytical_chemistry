@@ -4,6 +4,7 @@ import { useState, Fragment } from 'react';
 import { Combobox } from '@headlessui/react';
 import { reagents } from '@/data/reagents';
 import { calcPHStrongStrongGeneric } from '@/core/strongStrongGeneric';
+import { calcPHWeakStrongGeneric } from '@/core/weakStrongGeneric';
 
 type Reagent = (typeof reagents)[number];
 import {
@@ -90,13 +91,24 @@ export default function SimulationPage() {
     const step = vFinal / steps;    // L
     const pts: {vol:number; pH:number}[] = [];
 
-    for (let i = 0; i <= steps; i++) {          // ALTERADO
+    for (let i = 0; i <= steps; i++) {
       const vT = step * i;
-      const pH = calcPHStrongStrongGeneric({
-        analyte, cAnalyte: cA, vAnalyte: vA,
-        titrant, cTitrant: cT, vTitrant: vT
-      });
-      pts.push({ vol: +(vT*1000).toFixed(0), pH }); // guarda volume em mL
+      let pH: number;
+      if (
+        (analyte.strength === 'weak' || titrant.strength === 'weak') &&
+        analyte.type !== titrant.type
+      ) {
+        pH = calcPHWeakStrongGeneric({
+          analyte, cAnalyte: cA, vAnalyte: vA,
+          titrant, cTitrant: cT, vTitrant: vT
+        });
+      } else {
+        pH = calcPHStrongStrongGeneric({
+          analyte, cAnalyte: cA, vAnalyte: vA,
+          titrant, cTitrant: cT, vTitrant: vT
+        });
+      }
+      pts.push({ vol: +(vT * 1000).toFixed(0), pH });
     }
     setPoints(pts);
   }

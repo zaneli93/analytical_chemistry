@@ -12,6 +12,7 @@ interface Params {
 }
 
 /**
+
  * Resolve o cúbico completo derivado dos balanços de carga e massa para um ácido fraco.
  * f(x) = x³ + Ka·x² − x·(Ka·F + Kw) − Ka·Kw
  * Usa Newton-Raphson iniciando pela solução da quadrática que ignora Kw.
@@ -48,6 +49,7 @@ function solveCubicWeakBase(F: number, Kb: number, tol = 1e-12): number {
 }
 
 /**
+
  * Calcula o pH para titulação ácido fraco × base forte (genérico para ácido ou base fracos).
  */
 export function calcPHWeakStrongGeneric(p: Params): number {
@@ -80,20 +82,24 @@ export function calcPHWeakStrongGeneric(p: Params): number {
       const pH = pKa + Math.log10(A / HA);
       return Number(pH.toFixed(3));
     }
+
     if (nAnal === nTit) {
       const concA = nAnal / vTotal;
       const Kb = Kw / Ka;
       const OH = Kb * concA > 1e-4 ? solveCubicWeakBase(concA, Kb) : Math.sqrt(Kb * concA);
+
       const pOH = -Math.log10(OH);
       const pH = 14 - pOH;
       return Number(pH.toFixed(3));
     }
+
     const excessOH = nTit - nAnal;
     const OH = excessOH / vTotal;
     const pOH = -Math.log10(OH);
     const pH = 14 - pOH;
     return Number(pH.toFixed(3));
   }
+
 
   if (analyte.type === "base" && analyte.strength === "weak" && titrant.type === "acid" && titrant.strength === "strong") {
     const Kb = analyte.Kb!;
@@ -119,6 +125,7 @@ export function calcPHWeakStrongGeneric(p: Params): number {
       const pH = 14 - pOH;
       return Number(pH.toFixed(3));
     }
+
     if (nAnal === nTit) {
       const concBH = nAnal / vTotal;
       const Ka_conj = Kw / Kb;
