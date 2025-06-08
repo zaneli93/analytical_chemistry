@@ -12,7 +12,6 @@ interface Params {
 }
 
 /**
-
  * Resolve o cúbico completo derivado dos balanços de carga e massa para um ácido fraco.
  * f(x) = x³ + Ka·x² − x·(Ka·F + Kw) − Ka·Kw
  * Usa Newton-Raphson iniciando pela solução da quadrática que ignora Kw.
@@ -49,7 +48,6 @@ function solveCubicWeakBase(F: number, Kb: number, tol = 1e-12): number {
 }
 
 /**
-
  * Calcula o pH para titulação ácido fraco × base forte (genérico para ácido ou base fracos).
  */
 export function calcPHWeakStrongGeneric(p: Params): number {
@@ -57,8 +55,14 @@ export function calcPHWeakStrongGeneric(p: Params): number {
   const vTotal = vA + vT;
   const nAnal = cA * vA;
   const nTit  = cT * vT;
-
   const Kw = 1e-14;
+  const EPS = 1e-9;
+
+  // Determina se o reagente fraco está na bureta
+  const weakInBurette = titrant.strength === "weak";
+
+  // Teste de equivalência com tolerância
+  const atEq = Math.abs(nAnal - nTit) < EPS;
 
   if (analyte.type === "acid" && analyte.strength === "weak" && titrant.type === "base" && titrant.strength === "strong") {
     const Ka = analyte.Ka!;
@@ -83,14 +87,20 @@ export function calcPHWeakStrongGeneric(p: Params): number {
       return Number(pH.toFixed(3));
     }
 
-    if (nAnal === nTit) {
-      const concA = nAnal / vTotal;
-      const Kb = Kw / Ka;
-      const OH = Kb * concA > 1e-4 ? solveCubicWeakBase(concA, Kb) : Math.sqrt(Kb * concA);
-
-      const pOH = -Math.log10(OH);
-      const pH = 14 - pOH;
-      return Number(pH.toFixed(3));
+    if (atEq) {
+      if (weakInBurette) {
+        // Reagente forte na bureta → sal do ácido fraco em água → hidrólise do sal A⁻
+        const concA = nAnal / vTotal;
+        const Kb = Kw / Ka;
+        const OH = Kb * concA > 1e-4 ? solveCubicWeakBase(concA, Kb) : Math.sqrt(Kb * concA);
+        const pOH = -Math.log10(OH);
+        const pH = 14 - pOH;
+        return Number(pH.toFixed(3));
+      } else {
+        // Reagente fraco no béquer → tampão 1:1 → pH = pKa
+        const pKa = -Math.log10(Ka);
+        return Number(pKa.toFixed(3));
+      }
     }
 
     const excessOH = nTit - nAnal;
@@ -99,7 +109,6 @@ export function calcPHWeakStrongGeneric(p: Params): number {
     const pH = 14 - pOH;
     return Number(pH.toFixed(3));
   }
-
 
   if (analyte.type === "base" && analyte.strength === "weak" && titrant.type === "acid" && titrant.strength === "strong") {
     const Kb = analyte.Kb!;
@@ -126,16 +135,108 @@ export function calcPHWeakStrongGeneric(p: Params): number {
       return Number(pH.toFixed(3));
     }
 
-    if (nAnal === nTit) {
-      const concBH = nAnal / vTotal;
+    if (atEq) {
+      // No ponto de equivalência → somente NH4⁺ em solução
+      const C_NH4 = nAnal / vTotal;
       const Ka_conj = Kw / Kb;
-      const H = Ka_conj * concBH > 1e-4 ? solveCubicWeakAcid(concBH, Ka_conj) : Math.sqrt(Ka_conj * concBH);
+      const H = Ka_conj * C_NH4 > 1e-4 
+        ? solveCubicWeakAcid(C_NH4, Ka_conj) 
+        : Math.sqrt(Ka_conj * C_NH4);
       const pH = -Math.log10(H);
       return Number(pH.toFixed(3));
     }
     const excessH = nTit - nAnal;
     const H = excessH / vTotal;
     return Number((-Math.log10(H)).toFixed(3));
+  }
+
+  // ─── CASO ───  base forte (analito)   ×   ácido fraco (titulante)
+  if (analyte.type === "base" && analyte.strength === "strong"
+    && titrant.type === "acid" && titrant.strength === "weak") {
+
+    const Ka = titrant.Ka!;              // Ka do ácido fraco da bureta
+    const nStrong = cA * vA;             // mol inicial de OH– forte
+    const nWeak   = cT * vT;             // mol acumulado de HA fraco
+    const vTotal  = vA + vT;
+    const atEq = Math.abs(nStrong - nWeak) < EPS;
+
+    // (A) Antes da equivalência : OH– em excesso
+    if (nStrong > nWeak) {
+      const excessOH = nStrong - nWeak;
+      const OH = excessOH / vTotal;
+      const pOH = -Math.log10(OH);
+      return +(14 - pOH).toFixed(3);
+    }
+
+    // (B) Equivalência
+    if (atEq) {
+      if (weakInBurette) {
+        // Ácido fraco na bureta → sal A⁻ em água → hidrólise básica
+        const concA = nStrong / vTotal;
+        const Kb = Kw / Ka;
+        const OH = Kb * concA > 1e-4 ? solveCubicWeakBase(concA, Kb) : Math.sqrt(Kb * concA);
+        const pOH = -Math.log10(OH);
+        const pH = 14 - pOH;
+        return Number(pH.toFixed(3));
+      } else {
+        // Base forte no béquer → tampão 1:1 → pH = pKa
+        const pKa = -Math.log10(Ka);
+        return Number(pKa.toFixed(3));
+      }
+    }
+
+    // (C) Depois da equivalência : HA fraco em excesso → tampão
+    const molesA  = nStrong;             // todo OH– virou A–
+    const molesHA = nWeak - nStrong;     // HA remanescente
+    const [A, HA] = [molesA / vTotal, molesHA / vTotal];
+    const pKa = -Math.log10(Ka);
+    const pH  = pKa + Math.log10(A / HA);   // Henderson-Hasselbalch
+    return +pH.toFixed(3);
+  }
+
+  // ─── CASO ───  ácido forte (analito)   ×   base fraca (titulante)
+  if (analyte.type === "acid" && analyte.strength === "strong"
+    && titrant.type === "base" && titrant.strength === "weak") {
+
+    const Kb = titrant.Kb!;              // Kb da base fraca na bureta
+    const nStrong = cA * vA;             // mols de H+ forte no início
+    const nWeak   = cT * vT;             // mols de B (base fraca) adicionados
+    const vTotal  = vA + vT;
+    const atEq = Math.abs(nStrong - nWeak) < EPS;
+
+    // (A) Antes da equivalência – H+ forte em excesso
+    if (nStrong > nWeak) {
+      const excessH = nStrong - nWeak;
+      const H = excessH / vTotal;
+      return Number((-Math.log10(H)).toFixed(3));
+    }
+
+    // (B) Equivalência
+    if (atEq) {
+      if (weakInBurette) {
+        // Base fraca na bureta → sal BH⁺ em água → hidrólise ácida
+        const concBH = nStrong / vTotal;
+        const Ka_conj = Kw / Kb;
+        const H = Ka_conj * concBH > 1e-4
+          ? solveCubicWeakAcid(concBH, Ka_conj)
+          : Math.sqrt(Ka_conj * concBH);
+        return Number((-Math.log10(H)).toFixed(3));
+      } else {
+        // Ácido forte no béquer → tampão 1:1 → pOH = pKb → pH = 14 - pKb
+        const pKb = -Math.log10(Kb);
+        const pH = 14 - pKb;
+        return Number(pH.toFixed(3));
+      }
+    }
+
+    // (C) Depois da equivalência – tampão B/BH+
+    const molesB  = nWeak   - nStrong;       // excesso de base fraca não protonada
+    const molesBH = nStrong;                 // BH+ remanescente
+    const [B, BH] = [molesB / vTotal, molesBH / vTotal];
+    const pKb = -Math.log10(Kb);
+    const pOH = pKb + Math.log10(BH / B);    // Henderson–Hasselbalch (base)
+    const pH  = 14 - pOH;
+    return Number(pH.toFixed(3));
   }
 
   throw new Error("Combinação de reagentes não suportada no motor fraco–forte");
