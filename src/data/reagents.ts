@@ -18,6 +18,8 @@ export const reagents = [
   /* ────── ÁCIDOS FRACOS (monopróticos) ────── */
   { id: "ch3cooh", name: "Ácido Acético",   type: "acid", strength: "weak", protons: 1, Ka: 1.8e-5 },
   { id: "hf",      name: "Ácido Fluorídrico", type: "acid", strength: "weak", protons: 1, Ka: 6.6e-4 },
+  { id: "ohba",    name: "Ácido o-hidroxibenzoico", type: "acid", strength: "weak", protons: 1, Ka: 1.0e-3 },
+
 
   /* ────── BASES FRACAS (monopróticas) ────── */
   { id: "nh3",    name: "Amônia (NH₃)",    type: "base", strength: "weak", protons: 1, Kb: 1.8e-5 },
